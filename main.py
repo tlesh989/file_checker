@@ -27,10 +27,7 @@ def db_file_list(results):
 
     mycursor = mydb.cursor()
 
-    mycursor.execute(f"SELECT v3_track_variations.file_name \
-                    FROM v3_track_variations \
-                    INNER JOIN v3_tracks ON v3_tracks.id=v3_track_variations.track_id \
-                    WHERE v3_tracks.out_of_rotation=0 LIMIT {results}")
+    mycursor.execute(f"{os.getenv('SQL_QUERY')} LIMIT {results}")
 
     myresult = mycursor.fetchall()
 
