@@ -1,0 +1,4 @@
+boto3
+python-dotenv
+mysqlclient
+mysql-connector-python
