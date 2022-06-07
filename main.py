@@ -13,11 +13,21 @@ def file_list(work_folder):
     return fileset
 
 
+def csv_list(local_file):
+    csv_set = set()
+    with open(local_file, newline='') as f:
+        for row in csv.reader(f):
+            csv_set.add(row[0])
+        print("CSV file list records returned: ", len(csv_set))
+        return csv_set
+
+
 def db_file_list(results):
     fileset = set()
     logger.info('Connecting to the DB...')
     mydb = mysql.connector.connect(
         host=os.getenv("MYSQL_HOST"),
+        port=os.getenv("MYSQL_PORT"),
         user=os.getenv("MYSQL_USER"),
         password=os.getenv("MYSQL_PASS"),
         database=os.getenv("MYSQL_DB")
@@ -77,8 +87,10 @@ def main():
     folder_s3 = s3_file_list(max_results)
     diff_db = folder_db.difference(folder_s3)
     diff_s3 = folder_s3.difference(folder_db)
+    diff_csv = csv_list("filelist.csv").difference(folder_s3)
     write_csv("errors.csv", diff_db)
     write_csv("not_in_db.csv", diff_s3)
+    write_csv("csv_not_in_s3.csv", diff_csv)
     print(f"{len(diff_db)} files are enabled in the database, but not found in the file system.")
     for f in diff_db:
         print(f)
